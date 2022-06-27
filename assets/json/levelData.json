@@ -1,0 +1,78 @@
+{
+  "girlfriend": {
+    "x": 30,
+    "y": 100
+  },
+  "world": {
+    "width": 360,
+    "height": 700
+  },
+  "spawner": {
+    "interval": 2000,
+    "speed": 70,
+    "lifespan": 24500
+  },
+  "player": {
+    "x": 340,
+    "y": 500
+  },
+  "goal": {
+    "x": 120,
+    "y": 65
+  },
+
+  "platforms": [
+    {
+      "x": 145,
+      "y": 510,
+      "numTiles": 6,
+      "key": "block"
+    },
+    {
+      "x": 0,
+      "y": 380,
+      "numTiles": 8,
+      "key": "block"
+    },
+    {
+      "x": 72,
+      "y": 260,
+      "numTiles": 8,
+      "key": "block"
+    },
+    {
+      "x": 0,
+      "y": 140,
+      "numTiles": 7,
+      "key": "block"
+    },
+    {
+      "x": 0,
+      "y": 640,
+      "numTiles": 1,
+      "key": "ground"
+    }
+  ],
+  "fires": [
+    {
+      "x": 160,
+      "y": 120
+    },
+    {
+      "x": 186,
+      "y": 240
+    },
+    {
+      "x": 214,
+      "y": 361
+    },
+    {
+      "x": 190,
+      "y": 491
+    },
+    {
+      "x": 30,
+      "y": 618
+    }
+  ]
+}
