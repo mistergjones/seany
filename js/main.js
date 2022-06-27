@@ -19,7 +19,7 @@ gameScene.preload = function () {
   this.load.image("goal", "assets/images/gorilla3.png");
   this.load.image("barrel", "assets/images/barrel.png");
   // this.load.image("girlfriend", "assets/images/girlfriend.png");
-  this.load.image("girlfriend", "assets/images/pxArt-4.png");
+  this.load.image("girlfriend", "assets/images/pxArt-5.png");
 
   // load spritesheets
   this.load.spritesheet("player", "assets/images/player_spritesheet.png", {
