@@ -19,10 +19,10 @@ gameScene.preload = function () {
   this.load.image("goal", "assets/images/gorilla3.png");
   this.load.image("barrel", "assets/images/barrel.png");
   // this.load.image("girlfriend", "assets/images/girlfriend.png");
-  this.load.image("girlfriend", "assets/images/pxArt-5.png");
+  // this.load.image("girlfriend", "assets/images/piskel.png");
 
   // load spritesheets
-  this.load.spritesheet("player", "assets/images/player_spritesheet.png", {
+  this.load.spritesheet("player", "assets/images/hornyseany_spritesheet.png", {
     frameWidth: 28,
     frameHeight: 30,
     margin: 1,
@@ -34,6 +34,14 @@ gameScene.preload = function () {
     frameHeight: 21,
     margin: 1,
     spacing: 1,
+  });
+
+  // for the girlfriend
+  this.load.spritesheet("girlfriend", "assets/images/piskel.png", {
+    frameWidth: 16,
+    frameHeight: 28,
+    margin: 1,
+    spacing: 8,
   });
 
   // load the levelData json file
@@ -67,6 +75,21 @@ gameScene.create = function () {
     });
   }
 
+  // girlfriend ANIMATION HERE
+  // check to see that if we haven't already declare a girlfriend animiation, create it
+  if (!this.anims.get("girlfriend")) {
+    // create girlfriend annimation
+    this.anims.create({
+      key: "girlfriend",
+      frames: this.anims.generateFrameNumbers("girlfriend", {
+        start: 4,
+        end: 5,
+      }),
+      frameRate: 2,
+      repeat: -1,
+    });
+  }
+
   // setup all level elements from the level data. setupLevel() needs to be here as it creates the objects
   this.setupLevel();
 
@@ -92,9 +115,9 @@ gameScene.create = function () {
   this.cursors = this.input.keyboard.createCursorKeys();
 
   // console log the pointer object x and y coordinates
-  this.input.on("pointerdown", function (pointer) {
-    console.log(pointer.x, pointer.y);
-  });
+  // this.input.on("pointerdown", function (pointer) {
+  //   console.log(pointer.x, pointer.y);
+  // });
 };
 
 // executed on every frame
@@ -271,12 +294,20 @@ gameScene.setupLevel = function () {
       this.levelData.girlfriend.y,
       "girlfriend",
     )
-    .setScale(0.4, 0.4);
+    .setScale(1.5, 1.5)
+    .setFrame(4);
 
   // enable physics for girlfriend
   this.physics.add.existing(this.girlfriend);
 
-  this.add.text(30, 60, "Save Me Horny Seany! You can place it anywhere!!!!", {
+  // play girlfriend animation
+  this.girlfriend.anims.play("girlfriend");
+
+  this.add.text(5, 70, "Oh Save Me Horny Seany!", {
+    font: '"Press Start 2P"',
+    setBackgroundColor: "#00ff00",
+  });
+  this.add.text(5, 80, "You can place it anywhere!!!!", {
     font: '"Press Start 2P"',
     setBackgroundColor: "#00ff00",
   });
