@@ -2,6 +2,10 @@
 let gameScene = new Phaser.Scene("Game");
 
 var jumpButtonPressed = false;
+var leftButtonPressed = false;
+var isPlayerRunningLeft = false;
+var rightButtonPressed = false;
+var isPlayerRunningRight = false;
 
 // some parameters for our scene
 gameScene.init = function () {
@@ -173,7 +177,7 @@ gameScene.update = function () {
 
   // implment the player's movement
   // if the left arrow key is pressed
-  if (this.cursors.left.isDown) {
+  if (this.cursors.left.isDown || isPlayerRunningLeft) {
     // move the player's velocity to the left
     this.player.body.setVelocityX(-this.playerSpeed);
 
@@ -187,7 +191,7 @@ gameScene.update = function () {
     }
   }
   // if the right arrow key is pressed
-  else if (this.cursors.right.isDown) {
+  else if (this.cursors.right.isDown || isPlayerRunningRight) {
     // move the player's velocity to the right
     this.player.body.setVelocityX(this.playerSpeed);
 
@@ -366,7 +370,7 @@ gameScene.setupLevel = function () {
 
 gameScene.setUpGameControllerPad = function () {
   // create our virtual game controller buttons
-  this.leftButton = this.add.image(20, 680, "arrow");
+  this.leftButton = this.add.image(20, 480, "arrow");
   this.leftButton.flipX = true;
   this.leftButton.setDepth(1);
   // capture mouse input on this button
@@ -374,10 +378,11 @@ gameScene.setUpGameControllerPad = function () {
 
   // create a callback on this button to handle the pointerdown event
   this.leftButton.on("pointerdown", function (pointer, player) {
-    console.log("LEFT ARROW CLICKED", pointer);
-    if (pointer.isDown) {
-      console.log("ASDFAFA");
-    }
+    isPlayerRunningLeft = true;
+  });
+
+  this.leftButton.on("pointerup", function (pointer, player) {
+    isPlayerRunningLeft = false;
   });
 
   this.rightButton = this.add.image(150, 680, "arrow");
@@ -388,7 +393,10 @@ gameScene.setUpGameControllerPad = function () {
 
   // create a callback on this button to handle the pointerdown event
   this.rightButton.on("pointerdown", function (pointer) {
-    console.log("Right Arrow Clicked");
+    isPlayerRunningRight = true;
+  });
+  this.rightButton.on("pointerup", function (pointer) {
+    isPlayerRunningRight = false;
   });
 
   // add the jump button to the game scene
@@ -402,14 +410,6 @@ gameScene.setUpGameControllerPad = function () {
   this.jumpButton.on("pointerup", () => {
     this.jumpButtonPressed = false;
   });
-};
-
-gameScene.makePlayerJump = function () {
-  // make the player jump if the player is touching the ground
-  if (this.player.body.touching.down) {
-    this.player.setVelocityY(-500);
-    this.player.setVelocityX(0);
-  }
 };
 
 // restart game function
