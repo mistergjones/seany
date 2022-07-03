@@ -1,6 +1,8 @@
 // create a new scene
 let gameScene = new Phaser.Scene("Game");
 
+var jumpButtonPressed = false;
+
 // some parameters for our scene
 gameScene.init = function () {
   // player parameters
@@ -17,9 +19,18 @@ gameScene.preload = function () {
   this.load.image("platform", "assets/images/platform.png");
   this.load.image("block", "assets/images/block.png");
   this.load.image("goal", "assets/images/gorilla3.png");
-  this.load.image("barrel", "assets/images/barrel.png");
+  // this.load.image("barrel", "assets/images/barrel.png");
+  // load the barrel as a spritesheet
+  this.load.spritesheet("barrel", "assets/images/scissors.png", {
+    frameWidth: 30,
+    frameHeight: 30,
+    margin: 1,
+    spacing: 0,
+  });
   // this.load.image("girlfriend", "assets/images/girlfriend.png");
   // this.load.image("girlfriend", "assets/images/piskel.png");
+  this.load.image("arrow", "assets/images/Directional_Arrow_Straight.png");
+  this.load.image("jump", "assets/images/XboxOne_A.png");
 
   // load spritesheets
   this.load.spritesheet("player", "assets/images/hornyseany_spritesheet.png", {
@@ -37,12 +48,20 @@ gameScene.preload = function () {
   });
 
   // for the girlfriend
-  this.load.spritesheet("girlfriend", "assets/images/piskel.png", {
-    frameWidth: 16,
-    frameHeight: 28,
+  this.load.spritesheet("girlfriend", "assets/images/girlfriend.png", {
+    frameWidth: 22,
+    frameHeight: 31,
     margin: 1,
-    spacing: 8,
+    spacing: 1,
   });
+
+  // load the scissors as a spritesheet
+  // this.load.spritesheet("scissors", "assets/images/scissors.png", {
+  //   frameWidth: 30,
+  //   frameHeight: 30,
+  //   margin: 1,
+  //   spacing: 1,
+  // });
 
   // load the levelData json file
   this.load.json("levelData", "assets/json/levelData.json");
@@ -75,6 +94,17 @@ gameScene.create = function () {
     });
   }
 
+  // check to see if we haven't already declare a scissors animiation, create it
+  if (!this.anims.get("scissors")) {
+    // create scissors animation
+    this.anims.create({
+      key: "scissors",
+      frames: this.anims.generateFrameNumbers("barrel", { start: 0, end: 1 }),
+      frameRate: 6,
+      repeat: -1,
+    });
+  }
+
   // girlfriend ANIMATION HERE
   // check to see that if we haven't already declare a girlfriend animiation, create it
   if (!this.anims.get("girlfriend")) {
@@ -82,16 +112,19 @@ gameScene.create = function () {
     this.anims.create({
       key: "girlfriend",
       frames: this.anims.generateFrameNumbers("girlfriend", {
-        start: 4,
-        end: 5,
+        start: 0,
+        end: 3,
       }),
-      frameRate: 2,
+      frameRate: 3,
       repeat: -1,
     });
   }
 
   // setup all level elements from the level data. setupLevel() needs to be here as it creates the objects
   this.setupLevel();
+
+  // set up the virtual game controller buttons
+  this.setUpGameControllerPad();
 
   // initiate barrel spawner
   this.setupSpawner();
@@ -122,6 +155,18 @@ gameScene.create = function () {
 
 // executed on every frame
 gameScene.update = function () {
+  // get all the children of the barrels group
+  let barrelChildren = this.barrels.getChildren();
+
+  // for each  barrelChildren, flip the image if they hit left or right of the screen
+  barrelChildren.forEach(function (barrel) {
+    if (barrel.x > 350) {
+      barrel.flipX = true;
+    } else if (barrel.x < 16) {
+      barrel.flipX = false;
+    }
+  });
+
   // set a flag for checking if player is on the ground or touching another object/sprite
   let onGround =
     this.player.body.blocked.down || this.player.body.touching.down;
@@ -169,7 +214,12 @@ gameScene.update = function () {
 
   // handle jumping using SPACE bar or UP arrow key. Check if we are on the ground. i.e. only jump once
 
-  if (onGround && (this.cursors.up.isDown || this.cursors.space.isDown)) {
+  if (
+    onGround &&
+    (this.cursors.up.isDown ||
+      this.cursors.space.isDown ||
+      this.jumpButtonPressed)
+  ) {
     // give the player a velocity in the y direction
     this.player.body.setVelocityY(this.playerJumpSpeed);
 
@@ -244,15 +294,15 @@ gameScene.setupLevel = function () {
     this.fires.add(newObj);
 
     // PURELY FOR DRAGGING FIRES TO GET CO-ORDSmake the fire element draggable
-    newObj.setInteractive();
-    this.input.setDraggable(newObj);
+    // newObj.setInteractive();
+    // this.input.setDraggable(newObj);
   }
   // For level creation. // PURELY FOR DRAGGING FIRES TO GET CO-ORDSmake the fire element draggable
-  this.input.on("drag", function (pointer, gameObject, dragX, dragY) {
-    gameObject.x = dragX;
-    gameObject.y = dragY;
-    console.log(dragX, dragY);
-  });
+  // this.input.on("drag", function (pointer, gameObject, dragX, dragY) {
+  //   gameObject.x = dragX;
+  //   gameObject.y = dragY;
+  //   console.log(dragX, dragY);
+  // });
 
   // PLAYER
   // add the player to the scene. Use 3rd sprite image from the spritesheet
@@ -287,6 +337,7 @@ gameScene.setupLevel = function () {
   // enable physics for the existing goal
   this.physics.add.existing(this.goal);
 
+  // GIRLFRIEND
   // ADD TEH GIRLFRIEND SPRITE
   this.girlfriend = this.physics.add
     .sprite(
@@ -311,6 +362,54 @@ gameScene.setupLevel = function () {
     font: '"Press Start 2P"',
     setBackgroundColor: "#00ff00",
   });
+};
+
+gameScene.setUpGameControllerPad = function () {
+  // create our virtual game controller buttons
+  this.leftButton = this.add.image(20, 680, "arrow");
+  this.leftButton.flipX = true;
+  this.leftButton.setDepth(1);
+  // capture mouse input on this button
+  this.leftButton.setInteractive();
+
+  // create a callback on this button to handle the pointerdown event
+  this.leftButton.on("pointerdown", function (pointer, player) {
+    console.log("LEFT ARROW CLICKED", pointer);
+    if (pointer.isDown) {
+      console.log("ASDFAFA");
+    }
+  });
+
+  this.rightButton = this.add.image(150, 680, "arrow");
+
+  this.rightButton.setDepth(1);
+  // capture mouse input on this button
+  this.rightButton.setInteractive();
+
+  // create a callback on this button to handle the pointerdown event
+  this.rightButton.on("pointerdown", function (pointer) {
+    console.log("Right Arrow Clicked");
+  });
+
+  // add the jump button to the game scene
+  this.jumpButton = this.add.image(250, 680, "jump");
+  this.jumpButton.setScale(0.5, 0.5);
+  // make player jump if jumpButton is pressed
+  this.jumpButton.setInteractive();
+  this.jumpButton.on("pointerdown", () => {
+    this.jumpButtonPressed = true;
+  });
+  this.jumpButton.on("pointerup", () => {
+    this.jumpButtonPressed = false;
+  });
+};
+
+gameScene.makePlayerJump = function () {
+  // make the player jump if the player is touching the ground
+  if (this.player.body.touching.down) {
+    this.player.setVelocityY(-500);
+    this.player.setVelocityX(0);
+  }
 };
 
 // restart game function
@@ -353,6 +452,9 @@ gameScene.setupSpawner = function () {
       barrel.visible = true;
       // enable the barrel body
       barrel.body.enable = true;
+      barrel.setScale(0.6, 0.6);
+
+      barrel.anims.play("scissors");
 
       // set properties of the barrel
       barrel.setVelocityX(this.levelData.spawner.speed);
@@ -387,6 +489,7 @@ let config = {
   scene: gameScene,
   title: "Horny Seany",
   pixelArt: false,
+
   physics: {
     default: "arcade",
     arcade: {

@@ -8,7 +8,7 @@
     "height": 700
   },
   "spawner": {
-    "interval": 2000,
+    "interval": 3000,
     "speed": 70,
     "lifespan": 24500
   },
