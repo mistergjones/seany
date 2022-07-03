@@ -370,7 +370,7 @@ gameScene.setupLevel = function () {
 
 gameScene.setUpGameControllerPad = function () {
   // create our virtual game controller buttons
-  this.leftButton = this.add.image(20, 480, "arrow");
+  this.leftButton = this.add.image(20, 650, "arrow");
   this.leftButton.flipX = true;
   this.leftButton.setDepth(1);
   // capture mouse input on this button
@@ -385,7 +385,7 @@ gameScene.setUpGameControllerPad = function () {
     isPlayerRunningLeft = false;
   });
 
-  this.rightButton = this.add.image(150, 680, "arrow");
+  this.rightButton = this.add.image(150, 650, "arrow");
 
   this.rightButton.setDepth(1);
   // capture mouse input on this button
@@ -400,7 +400,7 @@ gameScene.setUpGameControllerPad = function () {
   });
 
   // add the jump button to the game scene
-  this.jumpButton = this.add.image(250, 680, "jump");
+  this.jumpButton = this.add.image(250, 650, "jump");
   this.jumpButton.setScale(0.5, 0.5);
   // make player jump if jumpButton is pressed
   this.jumpButton.setInteractive();
