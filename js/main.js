@@ -385,6 +385,10 @@ gameScene.setUpGameControllerPad = function () {
     isPlayerRunningLeft = false;
   });
 
+  this.leftButton.on("pointerout", function (pointer, player) {
+    isPlayerRunningLeft = false;
+  });
+
   this.rightButton = this.add.image(150, 650, "arrow");
 
   this.rightButton.setDepth(1);
@@ -398,6 +402,9 @@ gameScene.setUpGameControllerPad = function () {
   this.rightButton.on("pointerup", function (pointer) {
     isPlayerRunningRight = false;
   });
+  this.rightButton.on("pointerout", function (pointer) {
+    isPlayerRunningRight = false;
+  });
 
   // add the jump button to the game scene
   this.jumpButton = this.add.image(250, 650, "jump");
@@ -408,6 +415,9 @@ gameScene.setUpGameControllerPad = function () {
     this.jumpButtonPressed = true;
   });
   this.jumpButton.on("pointerup", () => {
+    this.jumpButtonPressed = false;
+  });
+  this.jumpButton.on("pointerout", () => {
     this.jumpButtonPressed = false;
   });
 };
