@@ -6,6 +6,7 @@ var leftButtonPressed = false;
 var isPlayerRunningLeft = false;
 var rightButtonPressed = false;
 var isPlayerRunningRight = false;
+var randomNumber = null;
 
 // some parameters for our scene
 gameScene.init = function () {
@@ -23,14 +24,33 @@ gameScene.preload = function () {
   this.load.image("platform", "assets/images/platform.png");
   this.load.image("block", "assets/images/block.png");
   this.load.image("goal", "assets/images/gorilla3.png");
+  // this.load.image("shlong", "assets/images/shlong.png");
+  // this.load.image("shlong2", "assets/images/shlong2.png");
+
   // this.load.image("barrel", "assets/images/barrel.png");
   // load the barrel as a spritesheet
-  this.load.spritesheet("barrel", "assets/images/scissors.png", {
+  this.load.spritesheet("cuttingScissors", "assets/images/scissors.png", {
     frameWidth: 30,
     frameHeight: 30,
     margin: 1,
     spacing: 0,
   });
+
+  this.load.spritesheet("attackingRed", "assets/images/red2.png", {
+    frameWidth: 64,
+    frameHeight: 30,
+    margin: 1,
+    spacing: 0,
+  });
+
+  // load shlong3 as a spritesheet
+  this.load.spritesheet("shoootingShlong", "assets/images/shlong3.png", {
+    frameWidth: 370,
+    frameHeight: 250,
+    margin: 5,
+    spacing: 30,
+  });
+
   // this.load.image("girlfriend", "assets/images/girlfriend.png");
   // this.load.image("girlfriend", "assets/images/piskel.png");
   this.load.image("arrow", "assets/images/Directional_Arrow_Straight.png");
@@ -103,8 +123,39 @@ gameScene.create = function () {
     // create scissors animation
     this.anims.create({
       key: "scissors",
-      frames: this.anims.generateFrameNumbers("barrel", { start: 0, end: 1 }),
+      frames: this.anims.generateFrameNumbers("cuttingScissors", {
+        start: 0,
+        end: 1,
+      }),
       frameRate: 6,
+      repeat: -1,
+    });
+  }
+
+  // check to see if we haven't already declare a attackingRed animiation, create it
+  if (!this.anims.get("red")) {
+    // create attackingRed animation
+    this.anims.create({
+      key: "red",
+      frames: this.anims.generateFrameNumbers("attackingRed", {
+        start: 0,
+        end: 12,
+      }),
+      frameRate: 24,
+      repeat: -1,
+    });
+  }
+
+  // check to see if we haven't already declare a shootingShlong animiation, create it
+  if (!this.anims.get("shootingShlong")) {
+    // create shootingShlong animation
+    this.anims.create({
+      key: "shootingShlong",
+      frames: this.anims.generateFrameNumbers("shoootingShlong", {
+        start: 0,
+        end: 10,
+      }),
+      frameRate: 10,
       repeat: -1,
     });
   }
@@ -159,6 +210,9 @@ gameScene.create = function () {
 
 // executed on every frame
 gameScene.update = function () {
+  // generate a random number that is either 1, 2 or 3
+  randomNumber = Phaser.Math.RND.between(1, 3);
+
   // get all the children of the barrels group
   let barrelChildren = this.barrels.getChildren();
 
@@ -464,7 +518,16 @@ gameScene.setupSpawner = function () {
       barrel.body.enable = true;
       barrel.setScale(0.6, 0.6);
 
-      barrel.anims.play("scissors");
+      // if random number is 0, play scissors, else play red
+      if (randomNumber === 1) {
+        barrel.anims.play("scissors");
+      } else if (randomNumber === 2) {
+        barrel.anims.play("red");
+      } else {
+        barrel.setScale(0.1, 0.1);
+        barrel.setOffset(0, 100);
+        barrel.anims.play("shootingShlong");
+      }
 
       // set properties of the barrel
       barrel.setVelocityX(this.levelData.spawner.speed);
@@ -499,6 +562,7 @@ let config = {
   scene: gameScene,
   title: "Horny Seany",
   pixelArt: false,
+  backgroundColor: "#a9a9a9",
 
   physics: {
     default: "arcade",
