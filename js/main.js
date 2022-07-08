@@ -51,6 +51,14 @@ gameScene.preload = function () {
     spacing: 30,
   });
 
+  // load fatchick as a spritesheet
+  this.load.spritesheet("fatchick", "assets/images/fatchick.png", {
+    frameWidth: 38,
+    frameHeight: 52,
+    margin: 0,
+    spacing: 0,
+  });
+
   // this.load.image("girlfriend", "assets/images/girlfriend.png");
   // this.load.image("girlfriend", "assets/images/piskel.png");
   this.load.image("arrow", "assets/images/Directional_Arrow_Straight.png");
@@ -159,6 +167,19 @@ gameScene.create = function () {
       repeat: -1,
     });
   }
+  // check to see if we haven't already declare a fat chick animiation, create it
+  if (!this.anims.get("fatchick")) {
+    // create shootingShlong animation
+    this.anims.create({
+      key: "fatchick",
+      frames: this.anims.generateFrameNumbers("fatchick", {
+        start: 0,
+        end: 1,
+      }),
+      frameRate: 6,
+      repeat: -1,
+    });
+  }
 
   // girlfriend ANIMATION HERE
   // check to see that if we haven't already declare a girlfriend animiation, create it
@@ -210,17 +231,17 @@ gameScene.create = function () {
 
 // executed on every frame
 gameScene.update = function () {
-  // generate a random number that is either 1, 2 or 3
-  randomNumber = Phaser.Math.RND.between(1, 3);
+  // generate a random number that is either 1, 2 or 4
+  randomNumber = Phaser.Math.RND.between(1, 4);
 
   // get all the children of the barrels group
   let barrelChildren = this.barrels.getChildren();
 
   // for each  barrelChildren, flip the image if they hit left or right of the screen
   barrelChildren.forEach(function (barrel) {
-    if (barrel.x > 350) {
+    if (barrel.x > 346) {
       barrel.flipX = true;
-    } else if (barrel.x < 16) {
+    } else if (barrel.x < 17) {
       barrel.flipX = false;
     }
   });
@@ -523,10 +544,13 @@ gameScene.setupSpawner = function () {
         barrel.anims.play("scissors");
       } else if (randomNumber === 2) {
         barrel.anims.play("red");
-      } else {
+      } else if (randomNumber === 3) {
         barrel.setScale(0.1, 0.1);
         barrel.setOffset(0, 100);
         barrel.anims.play("shootingShlong");
+      } else {
+        barrel.setScale(0.75, 0.75);
+        barrel.anims.play("fatchick");
       }
 
       // set properties of the barrel
